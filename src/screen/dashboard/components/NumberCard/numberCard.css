@@ -1,0 +1,26 @@
+.numberCard {
+  width: 200px;
+  padding: 24px;
+  margin-bottom: 24px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 200px;
+}
+
+.title {
+  line-height: 16px;
+  font-size: 16px;
+  margin-bottom: 8px;
+  height: 16px;
+}
+
+.number {
+  line-height: 32px;
+  font-size: 24px;
+  height: 32px;
+  margin-bottom: 0;
+}
