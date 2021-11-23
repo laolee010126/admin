@@ -100,10 +100,12 @@ function UserManagement() {
   function handleCancel() {
     setmodalVisible(false);
   }
-
+  function onChange(pagination: any, filters: any, sorter: any, extra: any) {
+    console.log("params", pagination, filters, sorter, extra);
+  }
   return (
     <LayoutSwapperPropsType key="2">
-      <Table rowSelection={rowSelection} columns={columns} dataSource={data} />
+      <Table rowSelection={rowSelection} columns={columns} dataSource={data} onChange={onChange} />
       <Modal
         style={{ width: 1000, height: 800 }}
         visible={modalVisible}

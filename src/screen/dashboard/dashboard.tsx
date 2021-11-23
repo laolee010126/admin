@@ -20,7 +20,9 @@ function DashBoard() {
 
   return (
     <LayoutSwapperPropsType key="1">
-      <div></div>
+      {/* {numbers.map((item, key) => {
+        return <NumberCard item={item} key={key} />;
+      })} */}
     </LayoutSwapperPropsType>
   );
 }
