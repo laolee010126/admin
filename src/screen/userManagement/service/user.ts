@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-export async function getUsers() {
-  const token = `Bearer ${localStorage.getItem("token")}`;
+const token = `Bearer ${localStorage.getItem("token")}`;
 
+export async function getUsers() {
   const { data } = await axios.get("http://localhost:3000/user", {
     headers: { Authorization: token },
   });
@@ -24,7 +24,6 @@ export async function getUsers() {
 }
 
 export async function updateUser(id: number, updateUserDTO: any) {
-  const token = `Bearer ${localStorage.getItem("token")}`;
   const response = await axios.put(
     "http://localhost:3000/order/working_orders",
     { updateUserDTO },
@@ -32,4 +31,11 @@ export async function updateUser(id: number, updateUserDTO: any) {
       headers: { Authorization: token },
     }
   );
+}
+
+export async function getUserById(id: number) {
+  const { data } = await axios.get(`http://localhost:3000/user/${id}`, {
+    headers: { Authorization: token },
+  });
+  return data;
 }
