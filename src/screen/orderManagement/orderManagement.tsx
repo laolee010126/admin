@@ -63,6 +63,10 @@ function OrderManagement() {
       title: "주문 일자",
       dataIndex: "create_at",
       key: "create_at",
+      render: (_: any, row: any) => {
+        const date = new Date(row.create_at).toLocaleString();
+        return <div>{date}</div>;
+      },
     },
     {
       title: "edit",

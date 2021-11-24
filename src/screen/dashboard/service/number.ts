@@ -1,40 +1,43 @@
 import axios from 'axios';
 
-// type NumberType = {
-//   title: string;
-//   number: number;
-// };
-
-export async function getUserData() {
-  const result = await axios.get("http://localhost:3000/user", {
+export async function getTodayUserData() {
+  const result = await axios.get("http://localhost:3000/user/new/today", {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
   return result.data;
 }
 
-export async function getOrderData() {
-  const result = await axios.get("http://localhost:3000/order/working_orders", {
+export async function getTodayOrderData() {
+  const result = await axios.get("http://localhost:3000/order/new/today", {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
   return result.data;
 }
 
-export async function getDepositRechargeData() {
-  const result = await axios.get("http://localhost:3000/depositRecharge/need_charge", {
+export async function getTodayDepositRechargeData() {
+  const result = await axios.get("http://localhost:3000/depositRecharge/new/today", {
     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
   });
   return result.data;
 }
 
-export async function getData() {
-  const users = await getUserData();
-  const orders = await getOrderData();
-  const depositRecharges = await getDepositRechargeData();
-  console.log("asdf");
+export async function getTodayNodataData() {
+  const result = await axios.get("http://localhost:3000/nodata/new/today", {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  });
+  return result.data;
+}
 
-  return [
-    { title: "User", number: users.length },
-    { title: "Order", number: orders.length },
-    { title: "Deposit", number: depositRecharges.length },
-  ];
+export async function getDashboardData() {
+  const todayUsers = await getTodayUserData();
+  const todayOrders = await getTodayOrderData();
+  const todayDepositRecharges = await getTodayDepositRechargeData();
+  const todayNodata = await getTodayNodataData();
+  const TodayData = {
+    todayUsers: todayUsers.length as number,
+    todayOrders: todayOrders.length as number,
+    todayDepositRecharges: todayDepositRecharges.length as number,
+    todayNodata: todayNodata.length as number,
+  };
+  return TodayData;
 }

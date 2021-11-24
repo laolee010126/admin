@@ -37,3 +37,12 @@ export async function getAllNeedRecharges() {
   const recharges: Recharge[] = data.map((_: Recharge) => ({ key: _.id, ..._ }));
   return recharges;
 }
+
+export async function addUserDeposit(user_id: number, deposit: number) {
+  const response = await axios.post(
+    `http://localhost:3000/user/${user_id}/add_deposit`,
+    { deposit },
+    { headers: { Authorization: token } }
+  );
+  return response;
+}

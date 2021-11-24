@@ -6,7 +6,7 @@ import LayoutSwapperPropsType from '../components/Layout';
 import RechargeDescriptions from './components/RechargeDescriptions';
 import UpdateForm from './components/UpdateForm';
 import UserDescriptions from './components/UserDescriptions';
-import { getAllRecharges, handleEditData } from './services/rechargeService';
+import { addUserDeposit, getAllRecharges, handleEditData } from './services/rechargeService';
 
 const token = `Bearer ${localStorage.getItem("token")}`;
 interface RechargeType {
@@ -48,6 +48,10 @@ function RechargeManagement() {
       title: "충전 일자",
       dataIndex: "create_at",
       key: "create_at",
+      render: (_: any, row: any) => {
+        const date = new Date(row.create_at).toLocaleString();
+        return <div>{date}</div>;
+      },
     },
     {
       title: "edit",
@@ -104,13 +108,7 @@ function RechargeManagement() {
        */
       if (targetRecharege?.user_id && is_charged) {
         //유저 예치금 추가
-        await axios.put(
-          `http://localhost:3000/user/${targetRecharege.user_id}`,
-          {
-            deposit: targetRecharege?.price,
-          },
-          { headers: { Authorization: token } }
-        );
+        await addUserDeposit(targetRecharege.user_id, targetRecharege.price);
         //예치금 충전 확인으로 변경
         await axios.put(
           `http://localhost:3000/depositRecharge/${recharge_id}`,
