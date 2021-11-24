@@ -17,7 +17,7 @@ export async function handleEditData(user_id: number, recharge: Recharge) {
   return { user, recharge };
 }
 
-export async function getAllRecharges() {
+export async function getAllRecharges(): Promise<Recharge[]> {
   const { data } = await axios.get("http://localhost:3000/depositRecharge", {
     headers: { Authorization: token },
   });

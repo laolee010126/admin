@@ -1,4 +1,5 @@
 import { Button, Modal, Table } from 'antd';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 import LayoutSwapperPropsType from '../components/Layout';
@@ -7,6 +8,14 @@ import UpdateForm from './components/UpdateForm';
 import UserDescriptions from './components/UserDescriptions';
 import { getAllRecharges, handleEditData } from './services/rechargeService';
 
+const token = `Bearer ${localStorage.getItem("token")}`;
+interface RechargeType {
+  id: number;
+  user_id: number;
+  price: number;
+  is_charged: boolean;
+  create_at: Date;
+}
 function RechargeManagement() {
   const columns = [
     {
@@ -60,8 +69,8 @@ function RechargeManagement() {
   ];
 
   const [visible, setvisible] = useState(false);
-  const [data, setdata] = useState([] as any);
-  const [editOrderData, seteditOrderData] = useState({ userArr: [] } as any);
+  const [data, setdata] = useState([] as RechargeType[]);
+  const [editOrderData, seteditOrderData] = useState([] as any);
   const [isCharged, setIsCharged] = useState(true);
 
   useEffect(() => {
@@ -82,9 +91,43 @@ function RechargeManagement() {
     setvisible(true);
   }
 
-  function handleOk() {
-    setvisible(false);
+  /**
+   * @param id 예치금 식별 인덱스
+   * @param is_charged 예치금 충전확인 여부
+   */
+  async function handleOk(recharge_id: number, is_charged: boolean) {
+    const targetRecharege = data.find((_) => _.id === recharge_id);
+    const targetRechargeIndex = data.findIndex((_) => _.id === recharge_id);
+    try {
+      /**
+       * 계좌이체 확인결과 충전확인이 되서 관리자가 충전 확인을 누를 시
+       */
+      if (targetRecharege?.user_id && is_charged) {
+        //유저 예치금 추가
+        await axios.put(
+          `http://localhost:3000/user/${targetRecharege.user_id}`,
+          {
+            deposit: targetRecharege?.price,
+          },
+          { headers: { Authorization: token } }
+        );
+        //예치금 충전 확인으로 변경
+        await axios.put(
+          `http://localhost:3000/depositRecharge/${recharge_id}`,
+          { is_charged },
+          { headers: { Authorization: token } }
+        );
+        //예치금 리스트 변경
+        setdata((prev: RechargeType[]) => {
+          let newData = [...prev];
+          newData[targetRechargeIndex] = { ...newData[targetRechargeIndex], is_charged };
+          return newData;
+        });
+      }
+      setvisible(false);
+    } catch {}
   }
+
   function handleCancle() {
     setvisible(false);
   }
@@ -102,7 +145,14 @@ function RechargeManagement() {
         title="예치금 충전 정보"
         centered
         visible={visible}
-        onOk={() => handleOk()}
+        onOk={() => {
+          if (!editOrderData.recharge.is_charged) {
+            handleOk(editOrderData.recharge.id, isCharged);
+          } else {
+            console.log("이미 충전 됐어 이년아");
+            handleCancle();
+          }
+        }}
         onCancel={() => handleCancle()}
         width={1500}
       >
