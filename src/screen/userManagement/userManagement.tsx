@@ -69,7 +69,7 @@ function UserManagement() {
       setlastSelectedRow(number);
     },
     getCheckboxProps: (record: DataType) => ({
-      disabled: record.nameK === "Disabled User", // Column configuration not to be checked
+      disabled: record.nameK === "Disabled User",
       name: record.nameK,
     }),
   };

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-type NumberType = {
-  title: string;
-  number: number;
-};
+// type NumberType = {
+//   title: string;
+//   number: number;
+// };
 
 export async function getUserData() {
   const result = await axios.get("http://localhost:3000/user", {

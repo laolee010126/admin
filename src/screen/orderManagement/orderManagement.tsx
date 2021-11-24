@@ -1,22 +1,13 @@
-import { Button, Card, Modal, Table } from 'antd';
+import { Button, Modal, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 
 import LayoutSwapperPropsType from '../components/Layout';
-import { getAllOrders, getUesrById } from './services/orderService';
-
-interface Order {
-  key: number;
-  id: number;
-  user_id: number;
-  product_id: number;
-  receiver_id: number;
-  order_type: string;
-  tracking_number: string;
-  warehouse_status: string;
-  paid: string;
-  auto_charge: string;
-  create_at: Date;
-}
+import OptionDescription from './components/OptionDescription';
+import PaymentDescription from './components/PaymentDescription';
+import ProductDescription from './components/ProductDescription';
+import ReceiverDescription from './components/ReceiverDescription';
+import UserDescription from './components/UserDescripttion';
+import { getAllOrders, getOrderById, handleEditData } from './services/orderService';
 
 function OrderManagement() {
   const columns = [
@@ -91,31 +82,31 @@ function OrderManagement() {
       },
     },
   ];
+
   const [visible, setvisible] = useState(false);
   const [data, setdata] = useState([] as any);
   const [editOrderData, seteditOrderData] = useState({} as any);
 
   useEffect(() => {
-    async function a() {
+    async function asyncGetOrders() {
       setdata(await getAllOrders());
     }
-    a();
+    asyncGetOrders();
   }, []);
 
-  async function handleEdit(order: Order) {
-    const user = await getUesrById(order.user_id);
-    const product = await seteditOrderData(order);
-    const option = await setvisible(true);
+  async function handleEdit(order: any) {
+    const result = await handleEditData(order);
+    seteditOrderData(result);
+    setvisible(true);
   }
 
   function handleOk() {
-    console.log("goeo");
-
     setvisible(false);
   }
   function handleCancle() {
     setvisible(false);
   }
+
   return (
     <LayoutSwapperPropsType key="3">
       <Table columns={columns} dataSource={data} />
@@ -127,33 +118,11 @@ function OrderManagement() {
         onCancel={() => handleCancle()}
         width={1500}
       >
-        <Card title="User" style={{ width: 300, height: 500, display: "inline-block", margin: 30 }}>
-          <p>{editOrderData.id}</p>
-        </Card>
-        <Card
-          title="Product"
-          style={{ width: 300, height: 500, display: "inline-block", margin: 30 }}
-        >
-          <p>{editOrderData.product_id}</p>
-        </Card>
-        <Card
-          title="Receiver"
-          style={{ width: 300, height: 500, display: "inline-block", margin: 30 }}
-        >
-          <p>{editOrderData.product_id}</p>
-        </Card>
-        <Card
-          title="Option"
-          style={{ width: 300, height: 500, display: "inline-block", margin: 30 }}
-        >
-          <p>{editOrderData.product_id}</p>
-        </Card>
-        <Card
-          title="Payment"
-          style={{ width: 300, height: 500, display: "inline-block", margin: 30 }}
-        >
-          <p>{editOrderData.product_id}</p>
-        </Card>
+        <OptionDescription optionObjectData={editOrderData.optionData} />
+        <PaymentDescription paymentObjectData={editOrderData.paymentData} />
+        <ReceiverDescription receiverObjectData={editOrderData.receiverData} />
+        <ProductDescription productObjectData={editOrderData.productData} />
+        <UserDescription userArrData={editOrderData.userData} />
       </Modal>
     </LayoutSwapperPropsType>
   );
