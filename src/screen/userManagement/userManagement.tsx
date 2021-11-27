@@ -1,149 +1,62 @@
-import { Button, Input, Modal, Space, Table } from 'antd';
+import { Menu, Modal } from 'antd';
 import React, { useEffect, useState } from 'react';
 
+import { AppstoreOutlined } from '@ant-design/icons';
+
 import LayoutSwapperPropsType from '../components/Layout';
+import UserDescription from './components/UserDescription';
+import UserTable from './components/UserTable';
 import { getUsers } from './service/user';
 
-interface DataType {
-  key: React.Key;
-  id: number;
-  nameK: string;
-  deposit: number;
-  phone: string;
-  email: string;
-  level: number;
-}
-
 function UserManagement() {
-  const columns = [
-    {
-      title: "id",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "姓名",
-      dataIndex: "nameK",
-      key: "nameL",
-    },
-    {
-      title: "钱包",
-      dataIndex: "deposit",
-      key: "deposit",
-    },
-    {
-      title: "电话",
-      dataIndex: "phone",
-      key: "phone",
-    },
-    {
-      title: "邮箱",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "等级",
-      dataIndex: "level",
-      key: "level",
-    },
-    {
-      title: "修改",
-      dataIndex: "operation",
-      key: "operation",
-      render: () => (
-        <Space
-          size="middle"
-          onClick={() => {
-            lastSelectedRow && setmodalVisible(true);
-          }}
-        >
-          <a>Edit</a>
-        </Space>
-      ),
-    },
-  ];
-
-  const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-      const number = String(selectedRowKeys[selectedRowKeys.length - 1]);
-      setlastSelectedRow(number);
-    },
-    getCheckboxProps: (record: DataType) => ({
-      disabled: record.nameK === "Disabled User",
-      name: record.nameK,
-    }),
-  };
-
-  const [data, setdata] = useState([] as any);
-  const [lastSelectedRow, setlastSelectedRow] = useState("");
-  const [modalVisible, setmodalVisible] = useState(false);
-  const [userData, setuserData] = useState({
+  const [current, setcurrent] = useState("All");
+  const [visible, setvisible] = useState(false);
+  const [editUserData, setEditUserData] = useState({
+    id: "" as any,
     nameK: "",
     nameE: "",
-    deposit: "",
+    deposit: "" as any,
     role: "",
     email: "",
     phone: "",
-    level: "",
+    level: "" as any,
+    businessRegistration: "",
+    username: "",
+    create_at: "",
+    updated_at: "",
   });
-  useEffect(() => {
-    async function getData() {
-      const result = await getUsers();
-      setdata(result);
-    }
-    getData();
-  }, []);
 
   function handleOk() {
-    setmodalVisible(false);
+    setvisible(false);
   }
+
   function handleCancel() {
-    setmodalVisible(false);
+    setvisible(false);
   }
-  function onChange(pagination: any, filters: any, sorter: any, extra: any) {
-    console.log("params", pagination, filters, sorter, extra);
-  }
+
+  function handleClick() {}
+
   return (
     <LayoutSwapperPropsType key="2">
-      <Table rowSelection={rowSelection} columns={columns} dataSource={data} onChange={onChange} />
+      <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
+        <Menu.Item key="All" icon={<AppstoreOutlined />}>
+          모든 유저내역 보기
+        </Menu.Item>
+      </Menu>
+      <UserTable
+        setvisible={setvisible}
+        seteditUserData={setEditUserData}
+        getInitialData={getUsers}
+      />
       <Modal
-        style={{ width: 1000, height: 800 }}
-        visible={modalVisible}
-        title={`유저 아이디: ${lastSelectedRow} 번`}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="submit" type="primary" onClick={handleOk}>
-            Submit
-          </Button>,
-        ]}
+        visible={visible}
+        title="오더 정보"
+        centered
+        onOk={() => handleOk()}
+        onCancel={() => handleCancel()}
+        width={1500}
       >
-        <Input placeholder="nameK" value={userData.nameK} disabled={true} />
-        <br />
-        <br />
-        <Input placeholder="nameE" value={userData.nameE} disabled={true} />
-        <br />
-        <br />
-        <Input placeholder="role" value={userData.role} disabled={true} />
-        <br />
-        <br />
-        <Input placeholder="deposit" value={userData.deposit} disabled={true} />
-        <br />
-        <br />
-        <Input
-          disabled={true}
-          placeholder="level"
-          value={userData.level}
-          onChange={(text) => {
-            setuserData({ ...userData, level: text.target.value });
-          }}
-        />
-        <br />
-        <br />
-        <Input placeholder="email" value={userData.email} disabled={true} />
-        <br />
-        <br />
-        <Input placeholder="phone" value={userData.phone} disabled={true} />
+        <UserDescription userData={editUserData} />
       </Modal>
     </LayoutSwapperPropsType>
   );

@@ -1,5 +1,4 @@
 import { Menu } from 'antd';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';

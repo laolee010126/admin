@@ -38,6 +38,13 @@ export async function updateUser(id: number, updateUserDTO: any) {
   );
 }
 
+export async function handleEditData(user: any) {
+  const { data } = await axios.get(`http://localhost:3000/user/${user.id}`, {
+    headers: { Authorization: token },
+  });
+  return data;
+}
+
 export async function getUserById(id: number): Promise<User> {
   const { data } = await axios.get(`http://localhost:3000/user/${id}`, {
     headers: { Authorization: token },

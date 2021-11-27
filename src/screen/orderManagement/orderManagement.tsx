@@ -1,107 +1,25 @@
-import { Button, Modal, Table } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Menu, Modal } from 'antd';
+import React, { useState } from 'react';
+
+import { AppstoreOutlined } from '@ant-design/icons';
 
 import LayoutSwapperPropsType from '../components/Layout';
 import OptionDescription from './components/OptionDescription';
+import OrderTable from './components/OrderTable';
 import PaymentDescription from './components/PaymentDescription';
 import ProductDescription from './components/ProductDescription';
 import ReceiverDescription from './components/ReceiverDescription';
 import UserDescription from './components/UserDescripttion';
-import { getAllOrders, getOrderById, handleEditData } from './services/orderService';
+import { getAllOrders, getPaidOrders, getWorkingOrders } from './services/orderService';
 
 function OrderManagement() {
-  const columns = [
-    {
-      title: "id",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "유저 아이디",
-      dataIndex: "user_id",
-      key: "user_id",
-    },
-    {
-      title: "상품",
-      dataIndex: " product_id",
-      key: "product_id",
-      render: (_: any, row: any) => {
-        return <div>{row.product_id}</div>;
-      },
-    },
-    {
-      title: "수취인",
-      dataIndex: "receiver_id",
-      key: "receiver_id",
-    },
-    {
-      title: "주문 타입",
-      dataIndex: "order_type",
-      key: "order_type",
-    },
-    {
-      title: "트래킹넘버",
-      dataIndex: "tracking_number",
-      key: "tracking_number",
-    },
-    {
-      title: "배송상태",
-      dataIndex: "warehouse_status",
-      key: "warehouse_status",
-    },
-    {
-      title: "결제 여부",
-      dataIndex: "paid",
-      key: "paid",
-    },
-    {
-      title: "예치금 자동 계산",
-      dataIndex: "auto_charge",
-      key: "auto_charge",
-    },
-    {
-      title: "주문 일자",
-      dataIndex: "create_at",
-      key: "create_at",
-      render: (_: any, row: any) => {
-        const date = new Date(row.create_at).toLocaleString();
-        return <div>{date}</div>;
-      },
-    },
-    {
-      title: "edit",
-      render: (_: any, row: any) => {
-        return (
-          <div>
-            <Button
-              type="primary"
-              onClick={() => {
-                handleEdit(row);
-              }}
-            >
-              Edit
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
-
   const [visible, setvisible] = useState(false);
-  const [data, setdata] = useState([] as any);
   const [editOrderData, seteditOrderData] = useState({} as any);
+  const [current, setCurrent] = useState("All");
 
-  useEffect(() => {
-    async function asyncGetOrders() {
-      setdata(await getAllOrders());
-    }
-    asyncGetOrders();
-  }, []);
-
-  async function handleEdit(order: any) {
-    const result = await handleEditData(order);
-    seteditOrderData(result);
-    setvisible(true);
+  function handleClick(e: any) {
+    console.log("click ", e);
+    setCurrent(e.key);
   }
 
   function handleOk() {
@@ -111,9 +29,49 @@ function OrderManagement() {
     setvisible(false);
   }
 
+  function MainScreen() {
+    if (current === "All") {
+      return (
+        <OrderTable
+          setvisible={setvisible}
+          seteditOrderData={seteditOrderData}
+          getInitialData={getAllOrders}
+        />
+      );
+    } else if (current === "Working") {
+      return (
+        <OrderTable
+          setvisible={setvisible}
+          seteditOrderData={seteditOrderData}
+          getInitialData={getWorkingOrders}
+        />
+      );
+    } else if (current === "Paid") {
+      return (
+        <OrderTable
+          setvisible={setvisible}
+          seteditOrderData={seteditOrderData}
+          getInitialData={getPaidOrders}
+        />
+      );
+    }
+    return <></>;
+  }
+
   return (
     <LayoutSwapperPropsType key="3">
-      <Table columns={columns} dataSource={data} />
+      <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">
+        <Menu.Item key="All" icon={<AppstoreOutlined />}>
+          주문내역 모두 보기
+        </Menu.Item>
+        <Menu.Item key="Working" icon={<AppstoreOutlined />}>
+          작업중인 주무내역 모두 보기
+        </Menu.Item>
+        <Menu.Item key="Paid" icon={<AppstoreOutlined />}>
+          결제 완료된 주무내역 모두 보기
+        </Menu.Item>
+      </Menu>
+      <MainScreen />
       <Modal
         title="오더 정보"
         centered

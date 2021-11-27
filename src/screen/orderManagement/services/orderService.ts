@@ -108,6 +108,58 @@ export async function getAllOrders() {
   return result;
 }
 
+export async function getWorkingOrders() {
+  const { data } = await axios.get("http://localhost:3000/order/working_orders", {
+    headers: { Authorization: token },
+  });
+  let result = [];
+  for (const order in data) {
+    const nowOrder = data[order];
+
+    const newOrder = {
+      key: nowOrder.id,
+      id: nowOrder.id,
+      user_id: nowOrder.user_id,
+      product_id: nowOrder.product_id,
+      receiver_id: nowOrder.receiver_id,
+      order_type: nowOrder.order_type,
+      tracking_number: nowOrder.tracking_number,
+      warehouse_status: nowOrder.warehouse_status,
+      paid: boolToOX(nowOrder.paid),
+      auto_charge: boolToOX(nowOrder.auto_charge),
+      create_at: nowOrder.create_at,
+    };
+    result.push(newOrder);
+  }
+  return result;
+}
+
+export async function getPaidOrders() {
+  const { data } = await axios.get("http://localhost:3000/order/condition/paid/true", {
+    headers: { Authorization: token },
+  });
+  let result = [];
+  for (const order in data) {
+    const nowOrder = data[order];
+
+    const newOrder = {
+      key: nowOrder.id,
+      id: nowOrder.id,
+      user_id: nowOrder.user_id,
+      product_id: nowOrder.product_id,
+      receiver_id: nowOrder.receiver_id,
+      order_type: nowOrder.order_type,
+      tracking_number: nowOrder.tracking_number,
+      warehouse_status: nowOrder.warehouse_status,
+      paid: boolToOX(nowOrder.paid),
+      auto_charge: boolToOX(nowOrder.auto_charge),
+      create_at: nowOrder.create_at,
+    };
+    result.push(newOrder);
+  }
+  return result;
+}
+
 export async function getOrderById(id: number) {
   const { data } = await axios.get(`http://localhost:3000/order/one/${id}`, {
     headers: { Authorization: token },
